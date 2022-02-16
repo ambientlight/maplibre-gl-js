@@ -215,22 +215,22 @@ var style = {
         'minzoom': 12,
         'filter': ['all', ['has', 'name']],
         'layout': {
-            // 'text-size': [
-            //     'interpolate',
-            //     ['linear'], ['zoom'],
-            //     0, 9.53,
-            //     11, 9.53,
-            //     12, 10.27,
-            //     13, 10.27,
-            //     14, 11.73,
-            //     15, 13.2,
-            //     16, 14.67,
-            //     17, 16.13,
-            //     18, 17.6,
-            //     19, 20.53,
-            //     22, 20.53
-            // ],
-            'text-size': 10.27,
+            'text-size': [
+                'interpolate',
+                ['linear'], ['zoom'],
+                0, 9.53,
+                11, 9.53,
+                12, 10.27,
+                13, 10.27,
+                14, 11.73,
+                15, 13.2,
+                16, 14.67,
+                17, 16.13,
+                18, 17.6,
+                19, 20.53,
+                22, 20.53
+            ],
+            //'text-size': 10.27,
             'text-font': ['SegoeFrutigerHelveticaMYingHei-Regular'],
             'text-field': ['get', 'name'],
             'symbol-placement': 'line',
@@ -240,9 +240,9 @@ var style = {
             'symbol-avoid-edges': false,
             'symbol-spacing': 1,
             'text-transform': 'none',
-            'text-allow-overlap': true,
+            'text-allow-overlap': false,
             'text-anchor': 'center',
-            'text-ignore-placement': true,
+            'text-ignore-placement': false,
             'text-line-height': 1.2,
             //'text-variable-anchor': ['center', 'left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
         },
@@ -257,8 +257,8 @@ var style = {
 
 var map = window.map = new maplibregl.Map({
     container: 'map',
-    zoom: 14,
-    center: [-122.35562, 47.62218],
+    zoom: 13,
+    center: [-122.34687, 47.63586],
     style,
     hash: true
 });
@@ -274,7 +274,35 @@ map.on('load', function() {
         type: 'geojson',
         data: {
             'type': 'FeatureCollection',
-            'features': []
+            'features': [{
+                'type': 'Feature',
+                'properties': {
+                    'bkt': 672,
+                    'name': 'W Galer St'
+                },
+                'source': 'bing-mvt',
+                'sourceLayer': 'road',
+                'state': {},
+                'geometry': {
+                    'type': 'MultiLineString',
+                    'coordinates': [
+                        [
+                            [-122.36180663108826, 47.63232776112673],
+                            [-122.36506819725037, 47.6323349911346],
+                            [-122.36180663108826, 47.63232776112673]
+                        ],
+                        [
+                            [-122.36180663108826, 47.63232776112673],
+                            [-122.36051917076111, 47.63232776112673],
+                            [-122.35693573951721, 47.63232053111781]
+                        ],
+                        [
+                            [-122.35693573951721, 47.63232053111781],
+                            [-122.36051917076111, 47.63232776112673]
+                        ]
+                    ]
+                }
+            }]
         }
     });
 
