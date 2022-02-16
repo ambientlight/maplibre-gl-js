@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <title>MapLibre GL JS debug page</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' href='../dist/maplibre-gl.css' />
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+
+        #checkboxes {
+            position: absolute;
+            background: #fff;
+            top:0;
+            left:0;
+            padding:10px;
+        }
+    </style>
+</head>
+
+<body>
+<div id='map'></div>
+<div id='checkboxes'>
+    <label><input id='show-tile-boundaries-checkbox' type='checkbox' checked> tile debug</label><br />
+    <label><input id='show-symbol-collision-boxes-checkbox' type='checkbox'> collision debug</label><br />
+    <label><input id='show-overdraw-checkbox' type='checkbox'> overdraw debug</label><br />
+    <label><input id='pitch-checkbox' type='checkbox' checked> pitch with rotate</label><br />
+</div>
+
+<script src='../dist/maplibre-gl-dev.js'></script>
+<script>
+
+var style = {
+    version: 8,
+    sources: {
+        'bing-mvt': {
+            type: 'vector',
+            tiles: [
+                'https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{z}-{x}-{y}.mvt?mkt=en-US&it=G,LC,L,LA&js=1&tj=1&ur=us&cstl=vbp2&mvt=1&features=mvt&og=1749'
+            ],
+            maxZoom: 18,
+            promoteId: 'id'
+        }
+    },
+    sprite: 'https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/stl/sprite?ods=mvt&mbxs=7dcff932-3b97-4b3e-9eb4-5b9aa89efa3c&v=8.26&og=1749&features=coupoi,clientlmkicon,logo',
+    glyphs: 'https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/stl?ods=mvt&glyphs={fontstack}&range={range}&og=1749',
+    layers: [{
+        'id': 'microsoft.bing.maps.base.land',
+        'type': 'background',
+        'paint': {'background-color': 'black'}
+    },
+    {
+        'id': 'line-l',
+        'type': 'line',
+        'source': 'bing-mvt',
+        'source-layer': 'road',
+        'minzoom': 11,
+        'filter': [
+            'all',
+            ['<', ['get', 'bkt'], 650],
+            ['!=', ['get', 'do-not-render'], true]
+        ],
+        'layout': {
+            'line-cap': 'round',
+            'visibility': 'none'
+        },
+        'paint': {
+            'line-color': 'cyan',
+            'line-opacity': 0.1,
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                11,
+                2,
+                12,
+                2.8,
+                13,
+                3.5,
+                14,
+                5,
+                15,
+                9,
+                16,
+                13,
+                17,
+                16,
+                18,
+                25,
+                19,
+                44,
+                20,
+                83,
+                21,
+                167,
+                22,
+                253
+            ]
+        }
+    },
+    {
+        'id': 'line-mid',
+        'type': 'line',
+        'source': 'bing-mvt',
+        'source-layer': 'road',
+        'minzoom': 11,
+        'filter': [
+            'all',
+            ['match', ['get', 'bkt'], [672, 676, 677, 675], true, false],
+            // ['>', ['get', 'bkt'], 650],
+            // ['<', ['get', 'bkt'], 700],
+            ['!=', ['get', 'do-not-render'], true]
+        ],
+        'layout': {'line-cap': 'round'},
+        'paint': {
+            'line-opacity': 0.1,
+            'line-color': ['rgb', ['*', ['-', ['get', 'bkt'], 630], 2], ['*', ['-', ['get', 'bkt'], 650], 4], ['*', ['-', ['get', 'bkt'], 650], 8]],
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                11,
+                2,
+                12,
+                2.8,
+                13,
+                3.5,
+                14,
+                5,
+                15,
+                9,
+                16,
+                13,
+                17,
+                16,
+                18,
+                25,
+                19,
+                44,
+                20,
+                83,
+                21,
+                167,
+                22,
+                253
+            ]
+        }
+    },
+    {
+        'id': 'line-h',
+        'type': 'line',
+        'source': 'bing-mvt',
+        'source-layer': 'road',
+        'minzoom': 11,
+        'filter': [
+            'all',
+            ['>', ['get', 'bkt'], 700],
+            ['!=', ['get', 'do-not-render'], true]
+        ],
+        'layout': {
+            'line-cap': 'round',
+            'visibility': 'none'
+        },
+        'paint': {
+            'line-color': 'magenta',
+            'line-opacity': 0.1,
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                11,
+                2,
+                12,
+                2.8,
+                13,
+                3.5,
+                14,
+                5,
+                15,
+                9,
+                16,
+                13,
+                17,
+                16,
+                18,
+                25,
+                19,
+                44,
+                20,
+                83,
+                21,
+                167,
+                22,
+                253
+            ]
+        }
+    },
+    {
+        'id': 'circle',
+        'type': 'circle',
+        'source': 'bing-mvt',
+        'source-layer': 'road',
+        'filter': ['all', ['has', 'name']],
+        'paint': {
+            'circle-radius': 2,
+            'circle-color': 'blue'
+        },
+    },
+    {
+        'id': 'microsoft.bing.maps.labels.arterial_unpaved_line_label-merged7',
+        'type': 'symbol',
+        'source': 'bing-mvt',
+        'source-layer': 'road',
+        'minzoom': 12,
+        'filter': ['all', ['has', 'name']],
+        'layout': {
+            // 'text-size': [
+            //     'interpolate',
+            //     ['linear'], ['zoom'],
+            //     0, 9.53,
+            //     11, 9.53,
+            //     12, 10.27,
+            //     13, 10.27,
+            //     14, 11.73,
+            //     15, 13.2,
+            //     16, 14.67,
+            //     17, 16.13,
+            //     18, 17.6,
+            //     19, 20.53,
+            //     22, 20.53
+            // ],
+            'text-size': 10.27,
+            'text-font': ['SegoeFrutigerHelveticaMYingHei-Regular'],
+            'text-field': ['get', 'name'],
+            'symbol-placement': 'line',
+            'text-max-angle': 360,
+            'text-padding': 0,
+            'symbol-z-order': 'auto',
+            'symbol-avoid-edges': false,
+            'symbol-spacing': 1,
+            'text-transform': 'none',
+            'text-allow-overlap': true,
+            'text-anchor': 'center',
+            'text-ignore-placement': true,
+            'text-line-height': 1.2,
+            //'text-variable-anchor': ['center', 'left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
+        },
+        'paint': {
+            'text-color': 'cyan',
+            'text-halo-width': 1,
+            'text-halo-color': 'blue',
+            'text-translate-anchor': 'map'
+        }
+    }]
+};
+
+var map = window.map = new maplibregl.Map({
+    container: 'map',
+    zoom: 14,
+    center: [-122.35562, 47.62218],
+    style,
+    hash: true
+});
+
+map.addControl(new maplibregl.NavigationControl());
+map.addControl(new maplibregl.ScaleControl());
+map.addControl(new maplibregl.FullscreenControl());
+
+map.on('load', function() {
+    map.showTileBoundaries = true;
+
+    map.addSource('geojson', {
+        type: 'geojson',
+        data: {
+            'type': 'FeatureCollection',
+            'features': []
+        }
+    });
+
+    map.addLayer({
+        'id': 'selection-highlight',
+        'type': 'line',
+        'source': 'geojson',
+        'minzoom': 11,
+        'layout': {'line-cap': 'round'},
+        'paint': {
+            'line-opacity': 1.0,
+            'line-color': 'orange',
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                11,
+                2,
+                12,
+                2.8,
+                13,
+                3.5,
+                14,
+                5,
+                15,
+                9,
+                16,
+                13,
+                17,
+                16,
+                18,
+                25,
+                19,
+                44,
+                20,
+                83,
+                21,
+                167,
+                22,
+                253
+            ]
+        }
+    });
+
+    map.addLayer({
+        'id': 'highlighted-circles',
+        'type': 'circle',
+        'source': 'geojson',
+        'filter': ['all', ['has', 'name']],
+        'paint': {
+            'circle-radius': 3,
+            'circle-color': 'magenta'
+        },
+    });
+
+    map.addLayer({
+        'id': 'selection-highlight-labels',
+        'type': 'symbol',
+        'source': 'geojson',
+        'minzoom': 12,
+        'filter': ['all', ['has', 'name']],
+        'layout': {
+            // 'text-size': [
+            //     'interpolate',
+            //     ['linear'], ['zoom'],
+            //     0, 9.53,
+            //     11, 9.53,
+            //     12, 10.27,
+            //     13, 10.27,
+            //     14, 11.73,
+            //     15, 13.2,
+            //     16, 14.67,
+            //     17, 16.13,
+            //     18, 17.6,
+            //     19, 20.53,
+            //     22, 20.53
+            // ],
+            'text-size': 10.27,
+            'text-font': ['SegoeFrutigerHelveticaMYingHei-Regular'],
+            'text-field': ['get', 'name'],
+            'symbol-placement': 'line',
+            'text-max-angle': 90,
+            'text-padding': 0,
+            'symbol-z-order': 'auto',
+            'symbol-avoid-edges': false,
+            'symbol-spacing': 1,
+            'text-transform': 'none',
+            'text-allow-overlap': false,
+            'text-anchor': 'center',
+            'text-ignore-placement': false,
+            'text-line-height': 1.2,
+            //'text-variable-anchor': ['center', 'left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
+        },
+        'paint': {
+            'text-color': 'black',
+            'text-halo-width': 1,
+            'text-halo-color': 'orange',
+            'text-translate-anchor': 'map'
+        }
+    });
+
+    let features = [];
+    map.on('mousemove', event => {
+        features = map
+            .queryRenderedFeatures(event.point, {layers: ['line-mid']})
+            // test flattening of MultiLineStrings
+            .map(feature => {
+                if (feature.geometry.type !== 'MultiLineString') {
+                    return feature;
+                }
+
+                feature.geometry.type = 'LineString';
+                feature.geometry.coordinates = feature.geometry.coordinates.flatMap(x => x);
+                return feature;
+            });
+        // console.log(features.map(feature => feature.geometry.type));
+        if (features.length > 0) {
+            map.getSource('geojson').setData({
+                'type': 'FeatureCollection',
+                features
+            });
+        }
+    });
+
+    map.on('click', () => {
+        globalThis.selected = features.map(feature => {
+            delete feature['layer'];
+            return feature;
+        });
+        console.log(features.filter(feature => feature['properties'] && 'name' in feature.properties));
+    });
+});
+
+document.getElementById('show-tile-boundaries-checkbox').onclick = function() {
+    map.showTileBoundaries = !!this.checked;
+};
+
+document.getElementById('show-symbol-collision-boxes-checkbox').onclick = function() {
+    map.showCollisionBoxes = !!this.checked;
+};
+
+document.getElementById('show-overdraw-checkbox').onclick = function() {
+    map.showOverdrawInspector = !!this.checked;
+};
+
+document.getElementById('pitch-checkbox').onclick = function() {
+    map.dragRotate._pitchWithRotate = !!this.checked;
+};
+
+// keyboard shortcut for comparing rendering with MapLibre GL native
+document.onkeypress = function(e) {
+    if (e.charCode === 111 && !e.shiftKey && !e.metaKey && !e.altKey) {
+        var center = map.getCenter();
+        location.href = 'mapboxgl://?center=' + center.lat + ',' + center.lng + '&zoom=' + map.getZoom() + '&bearing=' + map.getBearing();
+        return false;
+    }
+};
+
+</script>
+</body>
+</html>
