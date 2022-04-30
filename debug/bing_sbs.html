@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bing V9 Side-by-Side</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../dist/maplibre-gl.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, .map { height: 100%; }
+        .map { width: 50%; }
+        .map-pair { display: flex; height: 100%; width: 100%; flex-direction: row; }
+        #checkboxes {
+            position: absolute;
+            top:0;
+            right:0;
+            padding:10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+<div class="map-pair">
+    <div class="map" id="mapLeft"></div>
+    <div class="map" id="mapRight"></div>
+</div>
+<div id="checkboxes">
+    <label><input id="show-tile-boundaries-checkbox" type="checkbox" checked> tile debug</label><br />
+    <label><input id="show-symbol-collision-boxes-checkbox" type="checkbox"> collision debug</label><br />
+    <label><input id="show-overdraw-checkbox" type="checkbox"> overdraw debug</label><br />
+
+    <label><input id="symbol-avoid-edges" type="checkbox"> symbol-avoid-edges</label><br />
+    <label><input id="text-allow-overlap" type="checkbox"> text-allow-overlap</label><br />
+    <label><input id="text-ignore-placement" type="checkbox"> text-ignore-placement</label><br />
+    
+    <div style="display: flex; align-items: center;">
+        <label for="textmaxangle" style="padding-bottom: 2px; padding-right: 4px;">text-max-angle </label>
+        <input type="range" id="textmaxangle" name="textmaxangle" value="55" min="0" max="360">
+        <span id="textmaxangle">55</span>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <label for="symbolspacing" style="padding-bottom: 2px; padding-right: 4px;">symbol-spacing </label>
+        <input type="range" id="symbolspacing" name="symbolspacing" value="250" min="1" max="1000">
+        <span id="symbolspacing">250</span>
+    </div>
+</div>
+
+<script src="../dist/maplibre-gl-dev.js"></script>
+<script>
+
+var mapLeft = window.mapLeft = new maplibregl.Map({
+    container: "mapLeft",
+    zoom: 13,
+    center: [-122.34687, 47.63586],
+    style: "http://localhost:9966/debug/bing_style.json",
+    hash: true
+});
+
+var mapRight = window.mapRight = new maplibregl.Map({
+    container: "mapRight",
+    zoom: 13,
+    center: [-122.34687, 47.63586],
+    style: "http://localhost:9966/debug/bing_naked_style.json",
+    hash: true
+});
+
+const maps = [mapLeft, mapRight];
+let moveLockIdx = -1;
+maps.forEach((map, mapIdx) => {
+    map.addControl(new maplibregl.ScaleControl());
+    
+    map.on("load", function() {
+        map.showTileBoundaries = true;
+
+        document.querySelector("input#textmaxangle").addEventListener('input', function(){
+            document.querySelector("span#textmaxangle").firstChild.textContent = this.value;
+            map.getStyle().layers.filter(layer => layer.type == "symbol" && layer.source == "bing-mvt").forEach(layer => {
+                map.setLayoutProperty(layer.id, "text-max-angle", parseInt(this.value));
+            });
+        });   
+
+        document.querySelector("input#symbolspacing").addEventListener('input', function(){
+            document.querySelector("span#symbolspacing").firstChild.textContent = this.value;
+            map.getStyle().layers.filter(layer => layer.type == "symbol" && layer.source == "bing-mvt").forEach(layer => {
+                map.setLayoutProperty(layer.id, "symbol-spacing", parseInt(this.value));
+            });
+        });
+
+        document.getElementById("symbol-avoid-edges").addEventListener('click', function(){
+            map.getStyle().layers.filter(layer => layer.type == "symbol" && layer.source == "bing-mvt").forEach(layer => {
+                map.setLayoutProperty(layer.id, "symbol-avoid-edges", !!this.checked);
+            });
+        });
+
+        document.getElementById("text-allow-overlap").addEventListener('click', function(){
+            map.getStyle().layers.filter(layer => layer.type == "symbol" && layer.source == "bing-mvt").forEach(layer => {
+                map.setLayoutProperty(layer.id, "text-allow-overlap", !!this.checked);
+            });
+        });
+
+        document.getElementById("text-ignore-placement").addEventListener('click', function(){
+            map.getStyle().layers.filter(layer => layer.type == "symbol" && layer.source == "bing-mvt").forEach(layer => {
+                map.setLayoutProperty(layer.id, "text-ignore-placement", !!this.checked);
+            });
+        });
+    });
+
+    map.on("move", (event) => {
+        if(moveLockIdx != mapIdx && moveLockIdx != -1){
+            return;
+        }
+        
+        moveLockIdx = mapIdx;
+        if(mapIdx == 0){
+            mapRight.setCenter(map.getCenter());
+            mapRight.setBearing(map.getBearing());
+            mapRight.setPitch(map.getPitch());
+            mapRight.setZoom(map.getZoom());
+        } else {
+            mapLeft.setCenter(map.getCenter());
+            mapLeft.setBearing(map.getBearing());
+            mapLeft.setPitch(map.getPitch());
+            mapLeft.setZoom(map.getZoom());
+        }
+        
+        moveLockIdx = -1;
+    });
+
+    document.getElementById("show-tile-boundaries-checkbox").addEventListener('click', function(){
+        map.showTileBoundaries = !!this.checked;
+    });
+
+    document.getElementById("show-symbol-collision-boxes-checkbox").addEventListener('click', function(){
+        map.showCollisionBoxes = !!this.checked;
+    });
+
+    document.getElementById("show-overdraw-checkbox").addEventListener('click', function(){
+        map.showOverdrawInspector = !!this.checked;
+    });     
+});
+
+</script>
+</body>
+</html>
