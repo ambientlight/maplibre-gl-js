@@ -1,0 +1,126 @@
+{
+    "version": 8,
+    "sources": {
+        "bing-mvt": {
+            "type": "vector",
+            "tiles": [
+                "https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{z}-{x}-{y}.mvt?mkt=en-US&it=G,LC,L,LA&js=1&tj=1&ur=jp&cstl=vbp2&mvt=1&features=mvt,mvttxtmaxw&og=1835"
+            ],
+            "maxZoom": 18,
+            "promoteId": "id"
+        }
+    },
+    "sprite": "https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/stl/sprite?ods=mvt&mbxs=7dcff932-3b97-4b3e-9eb4-5b9aa89efa3c&v=8.26&og=1749&features=coupoi,clientlmkicon,logo",
+    "glyphs": "https://t.ssl.ak.dynamic.tiles.virtualearth.net/comp/stl?ods=mvt&glyphs={fontstack}&range={range}&og=1749",
+    "layers": [{
+        "id": "microsoft.bing.maps.base.land",
+        "type": "background",
+        "paint": {"background-color": "black"}
+    },
+    {
+        "id": "line-mid",
+        "type": "line",
+        "source": "bing-mvt",
+        "source-layer": "road",
+        "minzoom": 11,
+        "filter": [
+            "all",
+            ["match", ["get", "bkt"], [1313, 679, 677, 672, 676, 675, 674], true, true],
+            ["!=", ["get", "do-not-render"], true]
+        ],
+        "layout": {"line-cap": "round"},
+        "paint": {
+            "line-opacity": 0.10,
+            "line-color": [
+                "rgb", 
+                ["case",
+                    [">", ["*", ["-", ["get", "bkt"], 630], 2], 255], 255,
+                    ["<", ["*", ["-", ["get", "bkt"], 630], 2], 0], 0,
+                    ["*", ["-", ["get", "bkt"], 630], 2]
+                ],
+                ["case",
+                    [">", ["*", ["-", ["get", "bkt"], 630], 4], 255], 255,
+                    ["<", ["*", ["-", ["get", "bkt"], 630], 4], 0], 0,
+                    ["*", ["-", ["get", "bkt"], 630], 4]
+                ], 
+                ["case",
+                    [">", ["*", ["-", ["get", "bkt"], 630], 8], 255], 255,
+                    ["<", ["*", ["-", ["get", "bkt"], 630], 8], 0], 0,
+                    ["*", ["-", ["get", "bkt"], 630], 8]
+                ]
+            ],
+            "line-width": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                11,
+                2,
+                12,
+                2.8,
+                13,
+                3.5,
+                14,
+                4,
+                15,
+                6,
+                16,
+                10,
+                17,
+                15,
+                18,
+                20,
+                19,
+                40,
+                20,
+                83,
+                21,
+                167,
+                22,
+                253
+            ]
+        }
+    },
+    {
+        "id": "circle",
+        "type": "circle",
+        "source": "bing-mvt",
+        "source-layer": "road",
+        "filter": ["all", ["has", "name"]],
+        "paint": {
+            "circle-radius": 2,
+            "circle-color": "blue"
+        }
+    },
+    {
+        "id": "microsoft.bing.maps.labels.arterial_unpaved_line_label-merged7",
+        "type": "symbol",
+        "source": "bing-mvt",
+        "source-layer": "road",
+        "minzoom": 12,
+        "filter": [
+            "all", 
+            ["has", "name"],
+            [
+                "match", 
+                ["get", "bkt"],
+			    [1313, 679, 677, 672, 676, 675, 674], true, true
+		    ]
+        ],
+        "layout": {
+            "text-size": ["interpolate", ["linear"],
+				["zoom"], 0, 9.53, 11, 9.53, 12, 10.27, 13, 10.27, 14, 11.73, 15, 13.2, 16, 14.67, 17, 16.13, 18, 17.6, 19, 20.53, 22, 20.53
+			],
+            "text-font": ["SegoeFrutigerHelveticaMYingHei-Regular"],
+			"text-field": ["get", "name"],
+			"symbol-placement": "line",
+            "text-max-angle": 55,
+			"text-padding": 0
+        },
+        "paint": {
+            "text-color": "cyan",
+            "text-halo-width": 1,
+            "text-halo-color": "blue",
+            "text-translate-anchor": "map"
+        }
+    }]
+}
