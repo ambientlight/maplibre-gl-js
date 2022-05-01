@@ -285,6 +285,7 @@ export type SymbolLayerSpecification = {
         "text-overlap"?: PropertyValueSpecification<"never" | "always" | "cooperative">,
         "text-ignore-placement"?: PropertyValueSpecification<boolean>,
         "text-optional"?: PropertyValueSpecification<boolean>,
+        "text-box-scale"?: PropertyValueSpecification<number>,
         "visibility"?: "visible" | "none"
     },
     "paint"?: {

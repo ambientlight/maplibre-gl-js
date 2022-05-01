@@ -2440,6 +2440,25 @@
       },
       "property-type": "data-constant"
     },
+    "text-box-scale": {
+      "type": "number",
+      "default": 1,
+      "minimum": 0.01,
+      "doc": "box scale",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "2.1.6"
+        }
+      },
+      "expression": {
+        "interpolated": true,
+        "parameters": [
+          "zoom"
+        ]
+      },
+      "property-type": "data-constant",
+      "overridable": false
+    },
     "visibility": {
       "type": "enum",
       "values": {
