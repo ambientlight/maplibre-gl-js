@@ -286,6 +286,7 @@ export type SymbolLayerSpecification = {
         "text-ignore-placement"?: PropertyValueSpecification<boolean>,
         "text-optional"?: PropertyValueSpecification<boolean>,
         "text-box-scale"?: PropertyValueSpecification<number>,
+        "text-box-sizing"?: PropertyValueSpecification<"actual" | "max">,
         "visibility"?: "visible" | "none"
     },
     "paint"?: {

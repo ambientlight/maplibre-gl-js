@@ -380,10 +380,10 @@ function addFeature(bucket: SymbolBucket,
     // bucket calculates text-size at a high zoom level so that all tiles can
     // use the same value when calculating anchor positions.
     let textMaxSize = sizes.textMaxSize.evaluate(feature, {});
-    if (textMaxSize === undefined) {
+    const layout = bucket.layers[0].layout;
+    if (textMaxSize === undefined || layout.get('text-box-sizing') === 'actual') {
         textMaxSize = layoutTextSize;
     }
-    const layout = bucket.layers[0].layout;
     const iconOffset = layout.get('icon-offset').evaluate(feature, {}, canonical);
     const defaultHorizontalShaping = getDefaultHorizontalShaping(shapedTextOrientations.horizontal);
     const glyphSize = 24,

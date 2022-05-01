@@ -2459,6 +2459,32 @@
       "property-type": "data-constant",
       "overridable": false
     },
+    "text-box-sizing": {
+      "type": "enum",
+      "default": "max",
+      "values": {
+        "actual": {
+          "doc": "Text box size used in anchor calculation will assume the actual text font size. This may result in higher density of labels but may decrease the stability of anchor positions during zooms."
+        },
+        "max": {
+          "doc": "To reduce the number of labels that jump around when zooming we can calculate the text-size at a high zoom level so that all tiles can use the same value when calculating anchor positions."
+        }
+      },
+      "doc": "Allows for control over whether to show symbol text when it overlaps other symbols on the map. If `text-overlap` is not set, `text-allow-overlap` is used instead",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "2.1.6"
+        }
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom"
+        ]
+      },
+      "property-type": "data-constant",
+      "overridable": false
+    },
     "visibility": {
       "type": "enum",
       "values": {
