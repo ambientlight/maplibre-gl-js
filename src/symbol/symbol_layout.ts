@@ -398,6 +398,7 @@ function addFeature(bucket: SymbolBucket,
         textAlongLine = layout.get('text-rotation-alignment') === 'map' && layout.get('symbol-placement') !== 'point',
         iconAlongLine = layout.get('icon-rotation-alignment') === 'map' && layout.get('symbol-placement') !== 'point',
         symbolPlacement = layout.get('symbol-placement'),
+        anchorsOutsideTileAllowed = layout.get('symbol-anchor-allowed-outside-tile'),
         textRepeatDistance = symbolMinDistance / 2;
 
     const iconTextFit = layout.get('icon-text-fit');
@@ -415,7 +416,7 @@ function addFeature(bucket: SymbolBucket,
     }
 
     const addSymbolAtAnchor = (line, anchor) => {
-        if (anchor.x < 0 || anchor.x >= EXTENT || anchor.y < 0 || anchor.y >= EXTENT) {
+        if (!anchorsOutsideTileAllowed && (anchor.x < 0 || anchor.x >= EXTENT || anchor.y < 0 || anchor.y >= EXTENT)) {
             // Symbol layers are drawn across tile boundaries, We filter out symbols
             // outside our tile boundaries (which may be included in vector tile buffers)
             // to prevent double-drawing symbols.

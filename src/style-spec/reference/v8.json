@@ -2485,6 +2485,23 @@
       "property-type": "data-constant",
       "overridable": false
     },
+    "symbol-anchor-allowed-outside-tile": {
+      "type": "boolean",
+      "default": false,
+      "doc": "If true, symbol anchors will be allowed outside of the tile boundaries. This is applicable to the case when vector tile buffers are over-extended with data possible outside of tile boundaries.",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "2.1.6"
+        }
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom"
+        ]
+      },
+      "property-type": "data-constant"
+    },
     "visibility": {
       "type": "enum",
       "values": {

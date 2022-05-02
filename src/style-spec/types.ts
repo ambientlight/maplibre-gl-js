@@ -287,6 +287,7 @@ export type SymbolLayerSpecification = {
         "text-optional"?: PropertyValueSpecification<boolean>,
         "text-box-scale"?: PropertyValueSpecification<number>,
         "text-box-sizing"?: PropertyValueSpecification<"actual" | "max">,
+        "symbol-anchor-allowed-outside-tile"?: PropertyValueSpecification<boolean>,
         "visibility"?: "visible" | "none"
     },
     "paint"?: {
