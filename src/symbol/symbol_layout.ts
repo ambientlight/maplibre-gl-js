@@ -388,7 +388,7 @@ function addFeature(bucket: SymbolBucket,
     const defaultHorizontalShaping = getDefaultHorizontalShaping(shapedTextOrientations.horizontal);
     const glyphSize = 24,
         fontScale = layoutTextSize / glyphSize,
-        textBoxScale = bucket.tilePixelRatio * fontScale,
+        textBoxScale = bucket.tilePixelRatio * fontScale * layout.get('text-box-scale'),
         textMaxBoxScale = bucket.tilePixelRatio * (textMaxSize / glyphSize) * (layout.get('text-box-scale')),
         iconBoxScale = bucket.tilePixelRatio * layoutIconSize,
         symbolMinDistance = bucket.tilePixelRatio * layout.get('symbol-spacing'),
